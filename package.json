@@ -1,0 +1,23 @@
+{
+  "name": "pterodactyl-udm-sync",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Synchronises Pterodactyl allocation changes with Ubiquiti UDM port forwarding rules.",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node --transpile-only src/main.ts"
+  },
+  "dependencies": {
+    "axios": "^1.7.4",
+    "dotenv": "^16.4.5",
+    "tough-cookie": "^4.1.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/tough-cookie": "^4.0.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}

@@ -55,7 +55,7 @@ export class PterodactylClient {
     const allocations: Allocation[] = [];
     let currentPage = 1;
 
-    while (true) {
+    for (;;) {
       logDebug("[ptero] Fetching allocations", {
         nodeId,
         page: currentPage,

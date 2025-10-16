@@ -35,6 +35,8 @@ Create a `.env` file (you can copy `.env.example`) and provide the following val
 npm install
 npm run build
 npm start
+# Run unit tests
+npm test
 ```
 
 Use `npm run dev` for an on-demand TypeScript run without compiling first.

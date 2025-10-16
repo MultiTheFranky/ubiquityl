@@ -113,11 +113,8 @@ export class SyncService {
     existingRules: Map<number, PortForwardRule>,
   ): Promise<void> {
     const toDelete: PortForwardRule[] = [];
-    const toCreate: Array<{ allocation: Allocation; input: PortForwardRequest }> = [];
-    const toUpdate: Array<{
-      rule: PortForwardRule;
-      input: PortForwardRequest;
-    }> = [];
+    const toCreate: { allocation: Allocation; input: PortForwardRequest }[] = [];
+    const toUpdate: { rule: PortForwardRule; input: PortForwardRequest }[] = [];
 
     // Determine deletions and updates
     for (const [allocationId, rule] of existingRules) {
@@ -163,8 +160,8 @@ export class SyncService {
   }
 
   private async applyChanges(changeSet: {
-    toCreate: Array<{ allocation: Allocation; input: PortForwardRequest }>;
-    toUpdate: Array<{ rule: PortForwardRule; input: PortForwardRequest }>;
+    toCreate: { allocation: Allocation; input: PortForwardRequest }[];
+    toUpdate: { rule: PortForwardRule; input: PortForwardRequest }[];
     toDelete: PortForwardRule[];
   }): Promise<void> {
     for (const rule of changeSet.toDelete) {

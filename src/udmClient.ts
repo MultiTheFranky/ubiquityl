@@ -1,9 +1,9 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
-import https from "node:https";
-import { Cookie, CookieJar } from "tough-cookie";
-import { logDebug } from "./logger";
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import https from 'node:https';
+import { Cookie, CookieJar } from 'tough-cookie';
+import { logDebug } from './logger';
 
-export type UdmProtocol = "tcp" | "udp" | "tcp_udp";
+export type UdmProtocol = 'tcp' | 'udp' | 'tcp_udp';
 
 export interface PortForwardRule {
   id: string;
@@ -92,8 +92,8 @@ export class UdmClient {
     this.http = axios.create({
       baseURL: baseUrl,
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       httpsAgent: new https.Agent({ rejectUnauthorized: !allowSelfSigned }),
       timeout: 15_000,
@@ -102,9 +102,9 @@ export class UdmClient {
   }
 
   async listPortForwards(): Promise<PortForwardRule[]> {
-    logDebug("[udm] Listing port forwards");
+    logDebug('[udm] Listing port forwards');
     const response = await this.request<PortForwardResponse | RawPortForward[]>({
-      method: "GET",
+      method: 'GET',
       url: this.siteEndpoint,
     });
 
@@ -114,9 +114,9 @@ export class UdmClient {
         ? response.data?.data
         : [];
 
-    logDebug("[udm] List port forwards response", { count: payload.length });
+    logDebug('[udm] List port forwards response', { count: payload.length });
     if (payload[0]) {
-      logDebug("[udm] Sample existing port forward", payload[0]);
+      logDebug('[udm] Sample existing port forward', payload[0]);
     }
 
     return payload.map((raw) => this.mapRawToRule(raw));
@@ -124,7 +124,7 @@ export class UdmClient {
 
   async createPortForward(request: PortForwardRequest): Promise<PortForwardRule> {
     const payload = this.toPayload(request);
-    logDebug("[udm] Creating port forward", {
+    logDebug('[udm] Creating port forward', {
       name: payload.name,
       externalPort: payload.dst_port,
       internalIp: payload.fwd,
@@ -134,7 +134,7 @@ export class UdmClient {
       protocol: payload.proto,
     });
     const response = await this.request<PortForwardResponse>({
-      method: "POST",
+      method: 'POST',
       url: this.siteEndpoint,
       data: payload,
     });
@@ -151,7 +151,7 @@ export class UdmClient {
       ...this.toPayload(request),
       _id: rule.id,
     };
-    logDebug("[udm] Updating port forward", {
+    logDebug('[udm] Updating port forward', {
       id: rule.id,
       name: rule.name,
       externalPort: payload.dst_port,
@@ -159,7 +159,7 @@ export class UdmClient {
       protocol: payload.proto,
     });
     const response = await this.request<PortForwardResponse>({
-      method: "PUT",
+      method: 'PUT',
       url: `${this.siteEndpoint}/${rule.id}`,
       data: payload,
     });
@@ -168,17 +168,14 @@ export class UdmClient {
   }
 
   async deletePortForward(id: string): Promise<void> {
-    logDebug("[udm] Deleting port forward", { id });
+    logDebug('[udm] Deleting port forward', { id });
     await this.request<void>({
-      method: "DELETE",
+      method: 'DELETE',
       url: `${this.siteEndpoint}/${id}`,
     });
   }
 
-  private async request<T>(
-    config: AxiosRequestConfig,
-    attempt = 0,
-  ): Promise<AxiosResponse<T>> {
+  private async request<T>(config: AxiosRequestConfig, attempt = 0): Promise<AxiosResponse<T>> {
     await this.ensureAuthenticated();
 
     const prepared: AxiosRequestConfig = {
@@ -196,15 +193,15 @@ export class UdmClient {
     }
 
     try {
-      logDebug("[udm] HTTP request", {
+      logDebug('[udm] HTTP request', {
         method: prepared.method,
         url: prepared.url,
         attempt,
         hasCookie: Boolean(cookieHeader),
       });
       const response = await this.http.request<T>(prepared);
-      await this.storeCookies(response.headers["set-cookie"], targetUrl);
-      logDebug("[udm] HTTP response", {
+      await this.storeCookies(response.headers['set-cookie'], targetUrl);
+      logDebug('[udm] HTTP response', {
         method: prepared.method,
         url: prepared.url,
         status: response.status,
@@ -213,7 +210,7 @@ export class UdmClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response?.headers) {
-          await this.storeCookies(error.response.headers["set-cookie"], targetUrl);
+          await this.storeCookies(error.response.headers['set-cookie'], targetUrl);
         }
         if (attempt === 0 && this.isAuthError(error)) {
           await this.invalidateAuth();
@@ -221,7 +218,7 @@ export class UdmClient {
         }
 
         const errorData = this.describeResponseData(error.response?.data);
-        logDebug("[udm] HTTP error", {
+        logDebug('[udm] HTTP error', {
           method: prepared.method,
           url: prepared.url,
           status: error.response?.status,
@@ -229,9 +226,9 @@ export class UdmClient {
           data: errorData,
         });
         if (error.response?.status && error.response.status >= 400) {
-          const serialized = typeof errorData === "string" ? errorData : JSON.stringify(errorData);
+          const serialized = typeof errorData === 'string' ? errorData : JSON.stringify(errorData);
           console.error(
-            `[udm] Request failed: ${prepared.method ?? "GET"} ${prepared.url ?? ""} -> ${error.response.status} | ${serialized}`,
+            `[udm] Request failed: ${prepared.method ?? 'GET'} ${prepared.url ?? ''} -> ${error.response.status} | ${serialized}`,
           );
         }
       }
@@ -252,7 +249,7 @@ export class UdmClient {
       return;
     }
     if (!this.loginPromise) {
-      logDebug("[udm] Starting authentication");
+      logDebug('[udm] Starting authentication');
       this.loginPromise = this.authenticate();
     }
     try {
@@ -265,10 +262,10 @@ export class UdmClient {
   private async authenticate(): Promise<void> {
     await this.resetSession();
 
-    const loginUrl = this.resolveUrl("/api/auth/login");
-    logDebug("[udm] Logging in", { loginUrl });
+    const loginUrl = this.resolveUrl('/api/auth/login');
+    logDebug('[udm] Logging in', { loginUrl });
     const response = await this.http.post(
-      "/api/auth/login",
+      '/api/auth/login',
       {
         username: this.username,
         password: this.password,
@@ -276,21 +273,21 @@ export class UdmClient {
       },
       {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       },
     );
 
-    await this.storeCookies(response.headers["set-cookie"], loginUrl);
+    await this.storeCookies(response.headers['set-cookie'], loginUrl);
 
-    const csrfToken = await this.extractCsrfToken(response.headers["x-csrf-token"]);
+    const csrfToken = await this.extractCsrfToken(response.headers['x-csrf-token']);
     if (!csrfToken) {
-      throw new Error("Unable to determine CSRF token from UDM authentication response");
+      throw new Error('Unable to determine CSRF token from UDM authentication response');
     }
 
     this.csrfToken = csrfToken;
-    this.http.defaults.headers.common["X-CSRF-Token"] = csrfToken;
-    logDebug("[udm] Authentication successful");
+    this.http.defaults.headers.common['X-CSRF-Token'] = csrfToken;
+    logDebug('[udm] Authentication successful');
   }
 
   private async extractCsrfToken(
@@ -299,14 +296,12 @@ export class UdmClient {
     if (Array.isArray(headerToken) && headerToken.length > 0) {
       return headerToken[0];
     }
-    if (typeof headerToken === "string" && headerToken.length > 0) {
+    if (typeof headerToken === 'string' && headerToken.length > 0) {
       return headerToken;
     }
 
     const cookies = await this.jar.getCookies(this.baseUrl);
-    const cookieToken = cookies.find(
-      (cookie: Cookie) => cookie.key === "csrf_token",
-    );
+    const cookieToken = cookies.find((cookie: Cookie) => cookie.key === 'csrf_token');
     return cookieToken?.value ?? null;
   }
 
@@ -319,12 +314,10 @@ export class UdmClient {
     }
     const cookieList = Array.isArray(rawCookies) ? rawCookies : [rawCookies];
     if (cookieList.length > 0) {
-      logDebug("[udm] Storing cookies", { count: cookieList.length, url });
+      logDebug('[udm] Storing cookies', { count: cookieList.length, url });
     }
     await Promise.all(
-      cookieList
-        .filter(Boolean)
-        .map((cookieHeader) => this.jar.setCookie(cookieHeader, url)),
+      cookieList.filter(Boolean).map((cookieHeader) => this.jar.setCookie(cookieHeader, url)),
     );
   }
 
@@ -332,14 +325,14 @@ export class UdmClient {
     if (!data) {
       return null;
     }
-    if (typeof data === "string") {
+    if (typeof data === 'string') {
       return data.slice(0, 500);
     }
-    if (typeof data === "object") {
+    if (typeof data === 'object') {
       try {
         return JSON.parse(JSON.stringify(data));
       } catch {
-        return "[unserializable object]";
+        return '[unserializable object]';
       }
     }
     return data;
@@ -348,13 +341,13 @@ export class UdmClient {
   private async resetSession(): Promise<void> {
     this.jar = new CookieJar();
     this.csrfToken = null;
-    delete this.http.defaults.headers.common["X-CSRF-Token"];
-    logDebug("[udm] Session reset");
+    delete this.http.defaults.headers.common['X-CSRF-Token'];
+    logDebug('[udm] Session reset');
   }
 
   private async invalidateAuth(): Promise<void> {
     await this.resetSession();
-    logDebug("[udm] Authentication invalidated, will retry");
+    logDebug('[udm] Authentication invalidated, will retry');
   }
 
   private toPayload(request: PortForwardRequest): PortForwardPayload {
@@ -378,37 +371,37 @@ export class UdmClient {
 
   private unwrapSingle(payload?: PortForwardResponse): RawPortForward {
     if (!payload) {
-      throw new Error("Unexpected empty response from UDM Pro API");
+      throw new Error('Unexpected empty response from UDM Pro API');
     }
     if (Array.isArray(payload.data)) {
       if (payload.data.length === 0) {
-        throw new Error("UDM Pro API returned an empty collection");
+        throw new Error('UDM Pro API returned an empty collection');
       }
       return payload.data[0];
     }
     if (!payload.data) {
-      throw new Error("UDM Pro API response missing data");
+      throw new Error('UDM Pro API response missing data');
     }
     return payload.data;
   }
 
   private mapRawToRule(raw: RawPortForward): PortForwardRule {
     if (!raw._id) {
-      throw new Error("Encountered port forward entry without an identifier");
+      throw new Error('Encountered port forward entry without an identifier');
     }
 
     const proto = this.normalizeProtocol(raw.proto);
 
     return {
       id: raw._id,
-      name: raw.name ?? "",
+      name: raw.name ?? '',
       enabled: raw.enabled ?? true,
-      externalPort: raw.dst_port ?? "",
-      internalPort: raw.fwd_port ?? "",
-      internalIp: raw.fwd ?? "",
+      externalPort: raw.dst_port ?? '',
+      internalPort: raw.fwd_port ?? '',
+      internalIp: raw.fwd ?? '',
       protocol: proto,
-      source: raw.src ?? "any",
-      destination: raw.dst ?? "any",
+      source: raw.src ?? 'any',
+      destination: raw.dst ?? 'any',
       wanIp: raw.wanip,
       raw,
     };
@@ -416,25 +409,25 @@ export class UdmClient {
 
   private normalizeProtocol(value?: string): UdmProtocol {
     if (!value) {
-      return "tcp";
+      return 'tcp';
     }
     switch (value.toLowerCase()) {
-      case "tcp":
-        return "tcp";
-      case "udp":
-        return "udp";
-      case "both":
-      case "tcp_udp":
-      case "tcp-udp":
-        return "tcp_udp";
+      case 'tcp':
+        return 'tcp';
+      case 'udp':
+        return 'udp';
+      case 'both':
+      case 'tcp_udp':
+      case 'tcp-udp':
+        return 'tcp_udp';
       default:
-        return "tcp";
+        return 'tcp';
     }
   }
 
   private resolveUrl(path?: string): string {
     try {
-      return new URL(path ?? "", this.baseUrl).toString();
+      return new URL(path ?? '', this.baseUrl).toString();
     } catch {
       return this.baseUrl;
     }

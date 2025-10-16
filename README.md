@@ -8,24 +8,24 @@ The implementation periodically polls the Pterodactyl Application API for alloca
 
 Create a `.env` file (you can copy `.env.example`) and provide the following values:
 
-| Variable | Description |
-| --- | --- |
-| `PTERODACTYL_URL` | Base URL of your Pterodactyl panel (e.g. `https://panel.example.com`). |
-| `PTERODACTYL_API_KEY` | Application API key with permissions to list allocations for the target node. |
-| `PTERODACTYL_NODE_ID` | Numeric identifier of the node to watch for allocation changes. |
-| `SYNC_INTERVAL_SECONDS` | Optional polling interval; defaults to 30 seconds. |
-| `UDM_URL` | Base URL of the UDM (e.g. `https://192.168.1.1`). |
-| `UDM_USERNAME` | UniFi account username used to log in to the UDM. |
-| `UDM_PASSWORD` | UniFi account password used to log in to the UDM. |
-| `UDM_SITE` | Optional site name; defaults to `default`. |
-| `UDM_ALLOW_SELF_SIGNED` | Set to `true` when the UDM uses a self-signed certificate. |
-| `TARGET_IP_DEFAULT` | Internal IP to forward traffic to when no specific mapping is provided. |
-| `TARGET_IP_MAP` | Optional JSON map of `{ "publicIp": "internalIp" }` for multi-IP deployments. |
-| `UDM_WAN_IP` | WAN IP to bind the forward to (`any` to match all). |
-| `PORT_FORWARD_SOURCE` / `PORT_FORWARD_DESTINATION` | Source/destination match values for the rule (`any` by default). |
-| `PORT_FORWARD_PROTOCOL` | `tcp`, `udp`, or `tcp_udp`. Translates to UniFi's `tcp`, `udp`, or `both`. |
-| `PORT_FORWARD_NAME_PREFIX` | Prefix used to tag managed port forwards; defaults to `ptero-alloc-`. |
-| `DEBUG` | Set to `true` for verbose debug logging. |
+| Variable                                           | Description                                                                   |
+| -------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `PTERODACTYL_URL`                                  | Base URL of your Pterodactyl panel (e.g. `https://panel.example.com`).        |
+| `PTERODACTYL_API_KEY`                              | Application API key with permissions to list allocations for the target node. |
+| `PTERODACTYL_NODE_ID`                              | Numeric identifier of the node to watch for allocation changes.               |
+| `SYNC_INTERVAL_SECONDS`                            | Optional polling interval; defaults to 30 seconds.                            |
+| `UDM_URL`                                          | Base URL of the UDM (e.g. `https://192.168.1.1`).                             |
+| `UDM_USERNAME`                                     | UniFi account username used to log in to the UDM.                             |
+| `UDM_PASSWORD`                                     | UniFi account password used to log in to the UDM.                             |
+| `UDM_SITE`                                         | Optional site name; defaults to `default`.                                    |
+| `UDM_ALLOW_SELF_SIGNED`                            | Set to `true` when the UDM uses a self-signed certificate.                    |
+| `TARGET_IP_DEFAULT`                                | Internal IP to forward traffic to when no specific mapping is provided.       |
+| `TARGET_IP_MAP`                                    | Optional JSON map of `{ "publicIp": "internalIp" }` for multi-IP deployments. |
+| `UDM_WAN_IP`                                       | WAN IP to bind the forward to (`any` to match all).                           |
+| `PORT_FORWARD_SOURCE` / `PORT_FORWARD_DESTINATION` | Source/destination match values for the rule (`any` by default).              |
+| `PORT_FORWARD_PROTOCOL`                            | `tcp`, `udp`, or `tcp_udp`. Translates to UniFi's `tcp`, `udp`, or `both`.    |
+| `PORT_FORWARD_NAME_PREFIX`                         | Prefix used to tag managed port forwards; defaults to `ptero-alloc-`.         |
+| `DEBUG`                                            | Set to `true` for verbose debug logging.                                      |
 
 > **Note**: Either `TARGET_IP_DEFAULT` or at least one entry in `TARGET_IP_MAP` must be defined so the service knows which internal host to forward to.
 

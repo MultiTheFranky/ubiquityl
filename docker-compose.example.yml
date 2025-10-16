@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   sync:
@@ -9,5 +9,5 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: '10m'
+        max-file: '3'

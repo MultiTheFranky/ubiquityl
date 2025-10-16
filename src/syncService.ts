@@ -1,12 +1,7 @@
-import { AppConfig } from "./config";
-import { logDebug } from "./logger";
-import { Allocation, PterodactylClient } from "./pterodactylClient";
-import {
-  PortForwardRequest,
-  PortForwardRule,
-  UdmClient,
-  UdmProtocol,
-} from "./udmClient";
+import { AppConfig } from './config';
+import { logDebug } from './logger';
+import { Allocation, PterodactylClient } from './pterodactylClient';
+import { PortForwardRequest, PortForwardRule, UdmClient, UdmProtocol } from './udmClient';
 
 export class SyncService {
   private intervalRef: NodeJS.Timeout | null = null;
@@ -31,7 +26,7 @@ export class SyncService {
       try {
         await this.runSyncCycle();
       } catch (error) {
-        console.error("[sync] Cycle failed:", (error as Error).message);
+        console.error('[sync] Cycle failed:', (error as Error).message);
       }
     };
 
@@ -48,13 +43,13 @@ export class SyncService {
 
   private async runSyncCycle(): Promise<void> {
     if (this.syncing) {
-      console.warn("[sync] Previous cycle still running, skipping this tick");
+      console.warn('[sync] Previous cycle still running, skipping this tick');
       return;
     }
 
     this.syncing = true;
-    console.log("[sync] Starting cycle");
-    logDebug("[sync] Poll parameters", {
+    console.log('[sync] Starting cycle');
+    logDebug('[sync] Poll parameters', {
       pollIntervalMs: this.config.pterodactyl.pollIntervalMs,
       nodeId: this.config.pterodactyl.nodeId,
     });
@@ -65,7 +60,7 @@ export class SyncService {
         this.udmClient.listPortForwards(),
       ]);
 
-      logDebug("[sync] Data fetched", {
+      logDebug('[sync] Data fetched', {
         allocationCount: allocations.length,
         ruleCount: existingRules.length,
       });
@@ -74,14 +69,14 @@ export class SyncService {
       const desiredAllocations = new Map<number, Allocation>();
       allocations.forEach((allocation) => desiredAllocations.set(allocation.id, allocation));
 
-      logDebug("[sync] Relevant objects", {
+      logDebug('[sync] Relevant objects', {
         managedRuleCount: relevantRules.size,
         desiredAllocations: desiredAllocations.size,
       });
 
       await this.reconcileRules(desiredAllocations, relevantRules);
 
-      console.log("[sync] Cycle completed");
+      console.log('[sync] Cycle completed');
     } finally {
       this.syncing = false;
     }
@@ -152,7 +147,7 @@ export class SyncService {
     }
 
     await this.applyChanges({ toCreate, toUpdate, toDelete });
-    logDebug("[sync] Change set summary", {
+    logDebug('[sync] Change set summary', {
       toCreate: toCreate.length,
       toUpdate: toUpdate.length,
       toDelete: toDelete.length,
@@ -170,7 +165,9 @@ export class SyncService {
     }
 
     for (const { rule, input } of changeSet.toUpdate) {
-      console.log(`[sync] Updating port forward '${rule.name}' for allocation ${this.extractId(rule.name)}`);
+      console.log(
+        `[sync] Updating port forward '${rule.name}' for allocation ${this.extractId(rule.name)}`,
+      );
       await this.udmClient.updatePortForward(rule, input);
     }
 
@@ -189,7 +186,7 @@ export class SyncService {
     const externalPort = allocation.port;
     const internalPort = allocation.port;
 
-    logDebug("[sync] Building port forward request", {
+    logDebug('[sync] Building port forward request', {
       allocationId: allocation.id,
       externalPort,
       targetIp,
@@ -211,7 +208,7 @@ export class SyncService {
   private resolveTargetIp(allocation: Allocation): string | null {
     const { targetIpMap, defaultTargetIp } = this.config.udm;
     if (targetIpMap[allocation.ip]) {
-      logDebug("[sync] Resolved target via IP map", {
+      logDebug('[sync] Resolved target via IP map', {
         allocationId: allocation.id,
         externalIp: allocation.ip,
         target: targetIpMap[allocation.ip],
@@ -219,7 +216,7 @@ export class SyncService {
       return targetIpMap[allocation.ip];
     }
     if (allocation.ipAlias && targetIpMap[allocation.ipAlias]) {
-      logDebug("[sync] Resolved target via IP alias", {
+      logDebug('[sync] Resolved target via IP alias', {
         allocationId: allocation.id,
         externalIp: allocation.ipAlias,
         target: targetIpMap[allocation.ipAlias],
@@ -227,7 +224,7 @@ export class SyncService {
       return targetIpMap[allocation.ipAlias];
     }
     if (defaultTargetIp) {
-      logDebug("[sync] Using default target IP", {
+      logDebug('[sync] Using default target IP', {
         allocationId: allocation.id,
         target: defaultTargetIp,
       });
@@ -250,7 +247,7 @@ export class SyncService {
   }
 
   private extractId(name: string): string {
-    return name.replace(this.config.udm.namePrefix, "");
+    return name.replace(this.config.udm.namePrefix, '');
   }
 
   private isRuleOutOfSync(rule: PortForwardRule, target: PortForwardRequest): boolean {
@@ -282,7 +279,7 @@ export class SyncService {
       return true;
     }
 
-    if ((rule.wanIp ?? "any") !== target.wanIp) {
+    if ((rule.wanIp ?? 'any') !== target.wanIp) {
       return true;
     }
 
@@ -290,6 +287,6 @@ export class SyncService {
   }
 
   private escapeRegExp(value: string): string {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 }

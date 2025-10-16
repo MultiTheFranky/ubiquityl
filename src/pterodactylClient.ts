@@ -1,5 +1,5 @@
-import axios, { AxiosInstance } from "axios";
-import { logDebug } from "./logger";
+import axios, { AxiosInstance } from 'axios';
+import { logDebug } from './logger';
 
 export interface Allocation {
   id: number;
@@ -39,12 +39,15 @@ interface PaginatedResponse {
 export class PterodactylClient {
   private readonly http: AxiosInstance;
 
-  constructor(private readonly baseUrl: string, apiKey: string) {
+  constructor(
+    private readonly baseUrl: string,
+    apiKey: string,
+  ) {
     this.http = axios.create({
       baseURL: `${baseUrl}/api/application`,
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       timeout: 15_000,
@@ -56,23 +59,20 @@ export class PterodactylClient {
     let currentPage = 1;
 
     for (;;) {
-      logDebug("[ptero] Fetching allocations", {
+      logDebug('[ptero] Fetching allocations', {
         nodeId,
         page: currentPage,
       });
-      const response = await this.http.get<PaginatedResponse>(
-        `/nodes/${nodeId}/allocations`,
-        {
-          params: {
-            page: currentPage,
-            per_page: 50,
-          },
+      const response = await this.http.get<PaginatedResponse>(`/nodes/${nodeId}/allocations`, {
+        params: {
+          page: currentPage,
+          per_page: 50,
         },
-      );
+      });
 
       const payload = response.data;
       if (!Array.isArray(payload.data)) {
-        throw new Error("Unexpected payload when fetching allocations from Pterodactyl");
+        throw new Error('Unexpected payload when fetching allocations from Pterodactyl');
       }
 
       allocations.push(
@@ -85,7 +85,7 @@ export class PterodactylClient {
           isDefault: item.attributes.is_default,
         })),
       );
-      logDebug("[ptero] Received allocation page", {
+      logDebug('[ptero] Received allocation page', {
         nodeId,
         page: currentPage,
         count: payload.data.length,
@@ -98,7 +98,7 @@ export class PterodactylClient {
       currentPage += 1;
     }
 
-    logDebug("[ptero] Completed allocation fetch", {
+    logDebug('[ptero] Completed allocation fetch', {
       nodeId,
       total: allocations.length,
     });

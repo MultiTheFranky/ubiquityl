@@ -1,21 +1,41 @@
-import axios from "axios";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import axios, { AxiosInstance } from 'axios';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { PterodactylClient } from "../pterodactylClient";
+import { PterodactylClient } from '../pterodactylClient';
 
-describe("PterodactylClient", () => {
+const mockAxiosInstance = (overrides: Partial<AxiosInstance>): AxiosInstance =>
+  ({
+    create: vi.fn(),
+    defaults: {} as AxiosInstance['defaults'],
+    interceptors: {} as AxiosInstance['interceptors'],
+    getUri: vi.fn(),
+    request: vi.fn(),
+    delete: vi.fn(),
+    get: vi.fn(),
+    head: vi.fn(),
+    options: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    patch: vi.fn(),
+    postForm: vi.fn(),
+    putForm: vi.fn(),
+    patchForm: vi.fn(),
+    ...overrides,
+  }) as unknown as AxiosInstance;
+
+describe('PterodactylClient', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
 
-  it("fetches a single page of allocations", async () => {
+  it('fetches a single page of allocations', async () => {
     const getMock = vi.fn().mockResolvedValue({
       data: {
         data: [
           {
             attributes: {
               id: 10,
-              ip: "198.51.100.10",
+              ip: '198.51.100.10',
               ip_alias: null,
               port: 25565,
               notes: null,
@@ -32,19 +52,19 @@ describe("PterodactylClient", () => {
       },
     });
 
-    vi.spyOn(axios, "create").mockReturnValue({ get: getMock } as ReturnType<typeof axios.create>);
+    vi.spyOn(axios, 'create').mockReturnValue(mockAxiosInstance({ get: getMock }));
 
-    const client = new PterodactylClient("https://panel.example.com", "token");
+    const client = new PterodactylClient('https://panel.example.com', 'token');
     const allocations = await client.listAllocations(5);
 
-    expect(getMock).toHaveBeenCalledWith("/nodes/5/allocations", {
+    expect(getMock).toHaveBeenCalledWith('/nodes/5/allocations', {
       params: { page: 1, per_page: 50 },
     });
     expect(allocations).toHaveLength(1);
     expect(allocations[0]).toMatchObject({ id: 10, port: 25565 });
   });
 
-  it("handles pagination by merging subsequent pages", async () => {
+  it('handles pagination by merging subsequent pages', async () => {
     const getMock = vi
       .fn()
       .mockResolvedValueOnce({
@@ -53,7 +73,7 @@ describe("PterodactylClient", () => {
             {
               attributes: {
                 id: 1,
-                ip: "198.51.100.10",
+                ip: '198.51.100.10',
                 ip_alias: null,
                 port: 25565,
                 notes: null,
@@ -75,7 +95,7 @@ describe("PterodactylClient", () => {
             {
               attributes: {
                 id: 2,
-                ip: "198.51.100.11",
+                ip: '198.51.100.11',
                 ip_alias: null,
                 port: 25566,
                 notes: null,
@@ -92,9 +112,9 @@ describe("PterodactylClient", () => {
         },
       });
 
-    vi.spyOn(axios, "create").mockReturnValue({ get: getMock } as ReturnType<typeof axios.create>);
+    vi.spyOn(axios, 'create').mockReturnValue(mockAxiosInstance({ get: getMock }));
 
-    const client = new PterodactylClient("https://panel.example.com", "token");
+    const client = new PterodactylClient('https://panel.example.com', 'token');
     const allocations = await client.listAllocations(7);
 
     expect(getMock).toHaveBeenCalledTimes(2);

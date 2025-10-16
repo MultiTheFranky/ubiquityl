@@ -1,4 +1,4 @@
-const truthyValues = new Set(["1", "true", "yes", "y", "on"]);
+const truthyValues = new Set(['1', 'true', 'yes', 'y', 'on']);
 
 const isDebugEnabled = (() => {
   const raw = process.env.DEBUG;

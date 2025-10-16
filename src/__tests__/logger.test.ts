@@ -1,10 +1,10 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const ORIGINAL_ENV = { ...process.env };
 
 const importLogger = async () => {
   vi.resetModules();
-  return import("../logger");
+  return import('../logger');
 };
 
 afterEach(() => {
@@ -13,28 +13,28 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("logger", () => {
-  it("does not output when DEBUG is falsy", async () => {
-    process.env.DEBUG = "";
-    const spy = vi.spyOn(console, "debug").mockImplementation(() => {
+describe('logger', () => {
+  it('does not output when DEBUG is falsy', async () => {
+    process.env.DEBUG = '';
+    const spy = vi.spyOn(console, 'debug').mockImplementation(() => {
       /* noop */
     });
 
     const { logDebug } = await importLogger();
 
-    logDebug("message");
+    logDebug('message');
     expect(spy).not.toHaveBeenCalled();
   });
 
-  it("prints debug statements when DEBUG is true", async () => {
-    process.env.DEBUG = "true";
-    const spy = vi.spyOn(console, "debug").mockImplementation(() => {
+  it('prints debug statements when DEBUG is true', async () => {
+    process.env.DEBUG = 'true';
+    const spy = vi.spyOn(console, 'debug').mockImplementation(() => {
       /* noop */
     });
 
     const { logDebug } = await importLogger();
 
-    logDebug("message", { payload: 1 });
+    logDebug('message', { payload: 1 });
     expect(spy).toHaveBeenCalledTimes(1);
   });
 });

@@ -14,7 +14,7 @@ describe("UdmClient", () => {
       post: vi.fn(),
       request: vi.fn(),
       ...overrides,
-    }) as any;
+    }) as ReturnType<typeof axios.create>;
 
   it("authenticates and creates a port forward", async () => {
     const postMock = vi.fn().mockResolvedValue({

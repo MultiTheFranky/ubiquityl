@@ -16,7 +16,9 @@ afterEach(() => {
 describe("logger", () => {
   it("does not output when DEBUG is falsy", async () => {
     process.env.DEBUG = "";
-    const spy = vi.spyOn(console, "debug").mockImplementation(() => {});
+    const spy = vi.spyOn(console, "debug").mockImplementation(() => {
+      /* noop */
+    });
 
     const { logDebug } = await importLogger();
 
@@ -26,7 +28,9 @@ describe("logger", () => {
 
   it("prints debug statements when DEBUG is true", async () => {
     process.env.DEBUG = "true";
-    const spy = vi.spyOn(console, "debug").mockImplementation(() => {});
+    const spy = vi.spyOn(console, "debug").mockImplementation(() => {
+      /* noop */
+    });
 
     const { logDebug } = await importLogger();
 

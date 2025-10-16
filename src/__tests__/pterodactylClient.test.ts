@@ -32,7 +32,7 @@ describe("PterodactylClient", () => {
       },
     });
 
-    vi.spyOn(axios, "create").mockReturnValue({ get: getMock } as any);
+    vi.spyOn(axios, "create").mockReturnValue({ get: getMock } as ReturnType<typeof axios.create>);
 
     const client = new PterodactylClient("https://panel.example.com", "token");
     const allocations = await client.listAllocations(5);
@@ -92,7 +92,7 @@ describe("PterodactylClient", () => {
         },
       });
 
-    vi.spyOn(axios, "create").mockReturnValue({ get: getMock } as any);
+    vi.spyOn(axios, "create").mockReturnValue({ get: getMock } as ReturnType<typeof axios.create>);
 
     const client = new PterodactylClient("https://panel.example.com", "token");
     const allocations = await client.listAllocations(7);

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.19
 
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
@@ -9,7 +9,7 @@ COPY src ./src
 
 RUN npm install && npm run build && npm prune --omit=dev
 
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production

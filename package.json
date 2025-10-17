@@ -20,7 +20,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.14.10",
+    "@types/node": "^22.0.0",
     "@types/tough-cookie": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^7.17.0",
     "@typescript-eslint/parser": "^7.17.0",

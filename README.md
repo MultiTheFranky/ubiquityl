@@ -4,6 +4,21 @@ This service keeps a UniFi Dream Machine (UDM) firewall in sync with allocation 
 
 The implementation periodically polls the Pterodactyl Application API for allocation data, compares it with the forwards that already exist on the UDM, and applies only the differences. Each managed forward is tagged with a configurable prefix so that the synchroniser leaves any manually created rules untouched.
 
+## Requirements
+
+The project targets Node.js 22 (active LTS). Install Node.js 22.x for local development, or use the provided Docker workflow if you would rather avoid managing Node locally. The bundled npm 10.x is used for dependency management and scripts.
+
+## How It Works
+
+```mermaid
+flowchart LR
+    Panel[Pterodactyl Panel] -->|Application API poll| Service[Sync Service]
+    Service -->|Decode allocations| Diff{Compare with\nexisting forwards}
+    Diff -->|Create/update/delete rules| UDM[UniFi Dream Machine]
+    UDM -->|Port forward availability| Clients[External clients]
+    Service -->|Tagged prefix| UDM
+```
+
 ## Configuration
 
 Create a `.env` file (you can copy `.env.example`) and provide the following values:
@@ -37,9 +52,16 @@ npm run build
 npm start
 # Run unit tests
 npm test
+# Run static analysis
+npm run lint
+npm run type-check
+# Generate coverage report
+npm run test:coverage
 ```
 
 Use `npm run dev` for an on-demand TypeScript run without compiling first.
+
+> CI fails pull requests when overall coverage drops below 80%.
 
 ## Docker
 
@@ -52,7 +74,7 @@ docker run --rm \
   ptero-udm-sync
 ```
 
-The image is based on `node:20-alpine` and starts the compiled TypeScript entry point (`dist/main.js`).
+The image is based on `node:22-alpine` and starts the compiled TypeScript entry point (`dist/main.js`).
 
 ## Behaviour
 

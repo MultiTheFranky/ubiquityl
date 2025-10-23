@@ -13,7 +13,6 @@ export const logDebug = (...args: unknown[]): void => {
     return;
   }
   const timestamp = new Date().toISOString();
-  // eslint-disable-next-line no-console
   console.debug(`[debug ${timestamp}]`, ...args);
 };
 

@@ -43,11 +43,11 @@ const envSchema = z
     PTERODACTYL_URL: z.string().url('PTERODACTYL_URL must be a valid URL'),
     PTERODACTYL_API_KEY: z.string().min(1, 'PTERODACTYL_API_KEY is required'),
     PTERODACTYL_NODE_ID: z.coerce
-      .number({ invalid_type_error: 'PTERODACTYL_NODE_ID must be a number' })
+      .number({ error: 'PTERODACTYL_NODE_ID must be a number' })
       .int('PTERODACTYL_NODE_ID must be an integer')
       .nonnegative('PTERODACTYL_NODE_ID must be >= 0'),
     SYNC_INTERVAL_SECONDS: z.coerce
-      .number({ invalid_type_error: 'SYNC_INTERVAL_SECONDS must be a number' })
+      .number({ error: 'SYNC_INTERVAL_SECONDS must be a number' })
       .int('SYNC_INTERVAL_SECONDS must be an integer')
       .positive('SYNC_INTERVAL_SECONDS must be greater than zero')
       .default(30),

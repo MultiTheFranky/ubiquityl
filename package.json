@@ -10,6 +10,7 @@
     "lint": "eslint \"src/**/*.ts\"",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -24,6 +25,7 @@
     "@types/tough-cookie": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@vitest/coverage-v8": "^4.0.1",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
     "lefthook": "^2.0.0",

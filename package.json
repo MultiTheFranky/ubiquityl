@@ -25,13 +25,13 @@
     "@types/tough-cookie": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
-    "@vitest/coverage-v8": "^4.0.1",
+    "@vitest/coverage-v8": "^5.0.0",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
     "lefthook": "^2.0.0",
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
-    "vitest": "^4.0.0"
+    "vitest": "^5.0.0"
   }
 }
